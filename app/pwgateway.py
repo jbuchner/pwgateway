@@ -94,7 +94,7 @@ async def get_soc():
 
     raw_soc = response.json().get("percentage")
     adjusted_soc = (raw_soc-SOC_ADJUSTMENT)*(100/(100-SOC_ADJUSTMENT))
-    return min(max(round(adjusted_soc), 0), 100)
+    return {"soc": min(max(round(adjusted_soc), 0), 100)}
 
 
 @app.get("/power")
@@ -109,4 +109,4 @@ async def get_power():
         verify=False))
 
     instant_power = response.json().get("battery").get("instant_power")
-    return round(instant_power)
+    return {"power": round(instant_power)}
