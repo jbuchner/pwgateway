@@ -82,7 +82,7 @@ def do_with_auth(f: callable) -> requests.Response:
 
 
 @app.get("/soc")
-async def get_soc() -> str:
+async def get_soc():
     logger.info("get_soc")
     url = f"https://{POWERWALL}/api/system_status/soe"
     response = do_with_auth(lambda token: requests.get(
@@ -94,11 +94,11 @@ async def get_soc() -> str:
 
     raw_soc = response.json().get("percentage")
     adjusted_soc = (raw_soc-SOC_ADJUSTMENT)*(100/(100-SOC_ADJUSTMENT))
-    return str(min(max(round(adjusted_soc), 0), 100))
+    return min(max(round(adjusted_soc), 0), 100)
 
 
 @app.get("/power")
-async def get_power() -> str:
+async def get_power():
     logger.info("get_power")
     url = f"https://{POWERWALL}/api/meters/aggregates"
     response = do_with_auth(lambda token: requests.get(
@@ -109,4 +109,4 @@ async def get_power() -> str:
         verify=False))
 
     instant_power = response.json().get("battery").get("instant_power")
-    return str(round(instant_power))
+    return round(instant_power)
