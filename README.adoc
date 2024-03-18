@@ -1,1 +1,43 @@
 = Powerwall plugin for Teslasolarcharger
+
+== Configuring the Docker image
+
+Add the following lines to the `docker-compose.yml` file of Teslasolarcharger:
+
+[source, yaml]
+----
+pwplugin:
+    image: jbuchner/pwplugin:latest
+    restart: always
+    environment:
+      - POWERWALL=<Address or IP>
+      - USER_EMAIL=<Email>
+      - USER_PASSWORD=<Password>
+      - TZ=<TZ>
+    ports:
+      - 8081:8081
+    container_name: teslasolarcharger_pwplugin
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+----
+
+Replace the variables `<Address or IP>`, `<Email>`, `<Password>` and `<TZ>` with the appropriate values for your Powerwall.
+
+As value for TZ use the appropriate TZ identifier from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones. For example, use the value `Europe/Berlin` for Germany.
+
+Use
+
+[source, sh]
+----
+docker compose up -d
+----
+
+to start the containers.
+
+== Configure Teslasolarcharger
+
+
+...
