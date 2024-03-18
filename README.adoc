@@ -39,5 +39,103 @@ to start the containers.
 
 == Configure Teslasolarcharger
 
+Open the base configuration of your Teslasolarcharger and configure the following endpoints.
 
-...
+=== Grid power
+
+[cols="1,3"]
+|===
+
+| Source
+| `REST`
+
+| Grid Power Url
+| `http://pwplugin:8081/aggregates`
+
+| Result type
+| `JSON`
+
+| Grid Power Json Pattern
+| `$.site`
+
+| Grid Power Correction Factor
+| `-1`
+
+|===
+
+=== Home Battery
+
+[cols="1,3"]
+|===
+
+| Source
+| `REST`
+
+|===
+
+==== Home Battery Soc
+
+[cols="1,3"]
+|===
+
+| Home Battery Soc Url 
+| `http://pwplugin:8081/soc`
+
+| Result Type
+| `JSON`
+
+| Home Battery Soc Json Pattern
+| `$.adjusted_soc`
+
+| Home Battery Soc Correction Factor
+| `1`
+
+| Home Battery Minimum Soc 
+|
+
+|===
+
+==== Home Battery Power
+
+[cols="1,3"]
+|===
+
+| Home Battery Power Url 
+| `http://pwplugin:8081/aggregates`
+
+| Result Type
+| `JSON`
+
+| Home Battery Power Json Pattern
+| `$.battery`
+
+| Home Battery Power Correction Factor
+| `-1`
+
+| Home Battery Goal charging power 
+|
+
+|===
+
+
+=== Inverter
+
+[cols="1,3"]
+|===
+
+| Source
+| `REST`
+
+| Inverter Power Url
+| `http://pwplugin:8081/aggregates`
+
+| Result type
+| `JSON`
+
+| Inverter Power Json Pattern
+| `$.solar`
+
+| Inverter Power Correction Factor
+| `1`
+
+|===

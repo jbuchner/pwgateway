@@ -201,5 +201,5 @@ async def get_aggregates() -> dict[str, int]:
         "site": round(res["site"]["instant_power"]),
         "battery": round(res["battery"]["instant_power"]),
         "load": round(res["load"]["instant_power"]),
-        "solar": round(res["solar"]["instant_power"]),
+        "solar": round(max(res["solar"]["instant_power"], 0)),
     }
