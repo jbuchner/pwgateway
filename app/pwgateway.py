@@ -35,8 +35,8 @@ def get_environ(var: str) -> str:
 POWERWALL = get_environ("POWERWALL")
 USER_EMAIL = get_environ("USER_EMAIL")
 USER_PASSWORD = get_environ("USER_PASSWORD")
+TZ = get_environ("TZ")
 
-TZ = "Europe/Berlin"
 SOC_ADJUSTMENT = 5
 TIMEOUT = 10
 
@@ -46,6 +46,23 @@ logger.info("starting pwgateway (%s, %s)", POWERWALL, USER_EMAIL)
 
 # Ignore warnings for not validated access to the PW-API
 urllib3.disable_warnings()
+
+
+def check_http_error(response: requests.Response):
+    """Checks if the response of the HTTP server is OK.
+    If not, an exception is thrown.
+
+    Args:
+        response (requests.Response): The response of the HTTP server.
+
+    Raises:
+        HTTPException: Exception, if the response is not OK.
+    """
+    if response.status_code != HTTPStatus.OK:
+        raise HTTPException(
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+            f"Powerwall returned error ({response.status_code}: {response.json()['error']})")
+
 
 auth_token: str = None
 token_lock = Lock()
@@ -82,7 +99,15 @@ def get_token(regenerate: bool = False) -> str:
             timeout=TIMEOUT,
         )
 
-        auth_token = response.json()['token']
+        res = response.json()
+        logger.info("Get Token response: %s", res)
+
+        if response.status_code == HTTPStatus.UNAUTHORIZED:
+            raise HTTPException(HTTPStatus.UNAUTHORIZED,
+                                f"authentication with Powerwall failed ({res['error']})")
+        check_http_error(response)
+
+        auth_token = res['token']
         return auth_token
 
 
@@ -93,7 +118,7 @@ def do_with_auth(f: Callable[[str], requests.Response]) -> requests.Response:
         f (callable): Function, which should be called with an auth token.
 
     Raises:
-        HTTPException: 
+        HTTPException: Timeout exception
 
     Returns:
         requests.Response: Response of the called function.
@@ -125,11 +150,11 @@ def do_with_auth(f: Callable[[str], requests.Response]) -> requests.Response:
 
 
 @app.get("/soc")
-async def get_soc() -> int:
+async def get_soc() -> dict[str, int]:
     """ Retrieves the state of charge from the Tesla API.
 
     Returns:
-        int: soc
+        dict: The unadjusted and adjusted state of charge.
     """
     logger.info("get_soc")
     url = f"https://{POWERWALL}/api/system_status/soe"
@@ -141,17 +166,23 @@ async def get_soc() -> int:
         verify=False,
         timeout=TIMEOUT))
 
-    raw_soc = response.json()["percentage"]
-    adjusted_soc = (raw_soc-SOC_ADJUSTMENT)*(100/(100-SOC_ADJUSTMENT))
-    return min(max(round(adjusted_soc), 0), 100)
+    check_http_error(response)
+    res = response.json()
+
+    raw_soc = res["percentage"]
+    adjusted_soc = (raw_soc-SOC_ADJUSTMENT) * (100/(100-SOC_ADJUSTMENT))
+    adjusted_soc = max(min(adjusted_soc, 100), 0)
+    return {"raw_soc": round(raw_soc),
+            "adjusted_soc": round(adjusted_soc)
+            }
 
 
-@app.get("/power")
-async def get_power() -> int:
-    """ Retrieves the battery power from the Tesla API.
+@app.get("/aggregates")
+async def get_aggregates() -> dict[str, int]:
+    """ Retrieves different "aggregates" from the Tesla API.
 
     Returns:
-        int: battery power
+        dict: Dictionary with the power values for site, battery, load and solar.
     """
     logger.info("get_power")
     url = f"https://{POWERWALL}/api/meters/aggregates"
@@ -163,5 +194,12 @@ async def get_power() -> int:
         verify=False,
         timeout=TIMEOUT))
 
-    instant_power = response.json()["battery"]["instant_power"]
-    return round(instant_power)
+    check_http_error(response)
+    res = response.json()
+
+    return {
+        "site": round(res["site"]["instant_power"]),
+        "battery": round(res["battery"]["instant_power"]),
+        "load": round(res["load"]["instant_power"]),
+        "solar": round(res["solar"]["instant_power"]),
+    }
