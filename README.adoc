@@ -2,6 +2,7 @@
 
 This plugin makes it possible to use the https://github.com/pkuehnel/TeslaSolarCharger[TeslaSolarCharger] together with a Tesla Powerwall. All values required by the TeslaSolarCharger can be retrieved via this plugin.
 
+
 == Configuring the Docker image
 
 Add the following lines to the `docker-compose.yml` file of Teslasolarcharger:
@@ -49,13 +50,14 @@ The plugin should return the SoC of your Powerwall in this form:
 
 `{"raw_soc":30,"adjusted_soc":27}`
 
+
 == Configure Teslasolarcharger
 
 Open the base configuration of your Teslasolarcharger and configure the following endpoints.
 
 === Grid power
 
-[cols="1,3",width=100%]
+[cols="1,3" ]
 |===
 
 | Source
@@ -77,17 +79,15 @@ Open the base configuration of your Teslasolarcharger and configure the followin
 
 === Home Battery
 
-[cols="1,3",width=100%]
+[cols="1,3"]
 |===
-
 | Source
 | `REST`
-
 |===
 
 ==== Home Battery Soc
 
-[cols="1,3",width=100%]
+[cols="1,3"]
 |===
 
 | Home Battery Soc Url 
@@ -103,13 +103,13 @@ Open the base configuration of your Teslasolarcharger and configure the followin
 | `1`
 
 | Home Battery Minimum Soc 
-|
+| See documentation of https://github.com/pkuehnel/TeslaSolarCharger[TeslaSolarCharger]
 
 |===
 
 ==== Home Battery Power
 
-[cols="1,3",width=100%]
+[cols="1,3"]
 |===
 
 | Home Battery Power Url 
@@ -125,14 +125,14 @@ Open the base configuration of your Teslasolarcharger and configure the followin
 | `-1`
 
 | Home Battery Goal charging power 
-|
+| See documentation of https://github.com/pkuehnel/TeslaSolarCharger[TeslaSolarCharger]
 
 |===
 
 
 === Inverter
 
-[cols="1,3",width=100%]
+[cols="1,3"]
 |===
 
 | Source
@@ -160,7 +160,7 @@ The endpoint `/soc` provides both the state of charge provided by the API (`$.ra
 
 If you want to use the value provided by the API, you have to adjust the configuration as follows:
 
-[cols="1,3",width=100%]
+[cols="1,3"]
 |===
 | Home Battery Soc Json Pattern
 | `$.raw_soc`
