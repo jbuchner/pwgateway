@@ -42,7 +42,7 @@ to start the containers.
 
 You can check the installation by entering the following URL in your Browser:
 
-`http://localhost:8000/soc`
+`http://localhost:8081/soc`
 
 If the TeslaSolarCharger is running on a different computer, you will have to modify the URL accordingly.
 
