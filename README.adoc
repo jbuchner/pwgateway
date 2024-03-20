@@ -28,6 +28,8 @@ pwplugin:
 
 Replace the variables `<Address or IP>`, `<Email>`, `<Password>` and `<TZ>` with the appropriate values for your Powerwall.
 
+*Note*: `<Email>` are `<Password>` not the credentials for your Tesla account (which you use in your car and your app), but different credentials for your powerwall.
+
 As value for TZ use the appropriate TZ identifier from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones. For example, use the value `Europe/Berlin` for Germany.
 
 Use
@@ -63,7 +65,7 @@ Open the base configuration of your Teslasolarcharger and configure the followin
 | `REST`
 
 | Grid Power Url
-| `http://pwplugin:8081/aggregates`
+| `http://pwplugin/aggregates`
 
 | Result type
 | `JSON`
@@ -90,7 +92,7 @@ Open the base configuration of your Teslasolarcharger and configure the followin
 |===
 
 | Home Battery Soc Url 
-| `http://pwplugin:8081/soc`
+| `http://pwplugin/soc`
 
 | Result Type
 | `JSON`
@@ -112,7 +114,7 @@ Open the base configuration of your Teslasolarcharger and configure the followin
 |===
 
 | Home Battery Power Url 
-| `http://pwplugin:8081/aggregates`
+| `http://pwplugin/aggregates`
 
 | Result Type
 | `JSON`
@@ -138,7 +140,7 @@ Open the base configuration of your Teslasolarcharger and configure the followin
 | `REST`
 
 | Inverter Power Url
-| `http://pwplugin:8081/aggregates`
+| `http://pwplugin/aggregates`
 
 | Result type
 | `JSON`
