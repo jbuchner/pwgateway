@@ -18,8 +18,7 @@ pwplugin:
       - USER_PASSWORD=<Password>
       - TZ=<TZ>
     ports:
-      - 8081:8081
-    container_name: teslasolarcharger_pwplugin
+      - 8081:80
     logging:
       driver: "json-file"
       options:
