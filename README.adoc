@@ -28,7 +28,7 @@ pwplugin:
 
 Replace the variables `<Address or IP>`, `<Email>`, `<Password>` and `<TZ>` with the appropriate values for your Powerwall.
 
-*Note*: `<Email>` are `<Password>` not the credentials for your Tesla account (which you use in your car and your app), but different credentials for your powerwall.
+*Note*: `<Email>` and `<Password>` are not the credentials for your Tesla account (which you use in your car and your app), but different credentials for your Powerwall.
 
 As value for TZ use the appropriate TZ identifier from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones. For example, use the value `Europe/Berlin` for Germany.
 
