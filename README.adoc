@@ -13,7 +13,7 @@ pwplugin:
     image: jbuchner/pwplugin:latest
     restart: always
     environment:
-      - POWERWALL=<Address or IP>
+      - POWERWALL=<Host or IP>
       - USER_EMAIL=<Email>
       - USER_PASSWORD=<Password>
       - TZ=<TZ>
@@ -26,7 +26,7 @@ pwplugin:
         max-size: "10m"
 ----
 
-Replace the variables `<Address or IP>`, `<Email>`, `<Password>` and `<TZ>` with the appropriate values for your Powerwall.
+Replace the variables `<Host or IP>`, `<Email>`, `<Password>` and `<TZ>` with the appropriate values for your Powerwall.
 
 *Note*: `<Email>` and `<Password>` are not the credentials for your Tesla account (which you use in your car and your app), but different credentials for your Powerwall.
 
