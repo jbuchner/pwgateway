@@ -11,6 +11,7 @@ Add the following lines to the `docker-compose.yml` file of Teslasolarcharger:
 ----
 pwplugin:
     image: jbuchner/pwplugin:latest
+    container_name: pwplugin
     restart: always
     environment:
       - POWERWALL=<Host or IP>
