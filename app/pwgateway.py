@@ -10,6 +10,10 @@ from typing import Callable
 import requests
 import urllib3
 from fastapi import FastAPI, HTTPException
+from starlette.applications import Starlette
+from starlette.responses import JSONResponse
+from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -31,18 +35,6 @@ def get_environ(var: str) -> str:
 
     return val
 
-
-POWERWALL = get_environ("POWERWALL")
-USER_EMAIL = get_environ("USER_EMAIL")
-USER_PASSWORD = get_environ("USER_PASSWORD")
-TZ = get_environ("TZ")
-
-SOC_ADJUSTMENT = 5
-TIMEOUT = 10
-
-
-app = FastAPI()
-logger.info("starting pwgateway (%s, %s)", POWERWALL, USER_EMAIL)
 
 # Ignore warnings for not validated access to the PW-API
 urllib3.disable_warnings()
@@ -149,8 +141,7 @@ def do_with_auth(f: Callable[[str], requests.Response]) -> requests.Response:
     raise HTTPException(HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
-@app.get("/soc")
-async def get_soc() -> dict[str, int]:
+async def get_soc(_) -> dict[str, int]:
     """ Retrieves the state of charge from the Tesla API.
 
     Returns:
@@ -172,13 +163,12 @@ async def get_soc() -> dict[str, int]:
     raw_soc = res["percentage"]
     adjusted_soc = (raw_soc-SOC_ADJUSTMENT) * (100/(100-SOC_ADJUSTMENT))
     adjusted_soc = max(min(adjusted_soc, 100), 0)
-    return {"raw_soc": round(raw_soc),
-            "adjusted_soc": round(adjusted_soc)
-            }
+    return JSONResponse({"raw_soc": round(raw_soc),
+                         "adjusted_soc": round(adjusted_soc)
+                         })
 
 
-@app.get("/aggregates")
-async def get_aggregates() -> dict[str, int]:
+async def get_aggregates(_) -> dict[str, int]:
     """ Retrieves different "aggregates" from the Tesla API.
 
     Returns:
@@ -197,9 +187,25 @@ async def get_aggregates() -> dict[str, int]:
     check_http_error(response)
     res = response.json()
 
-    return {
+    return JSONResponse({
         "site": round(res["site"]["instant_power"]),
         "battery": round(res["battery"]["instant_power"]),
         "load": round(res["load"]["instant_power"]),
         "solar": round(max(res["solar"]["instant_power"], 0)),
-    }
+    })
+
+POWERWALL = get_environ("POWERWALL")
+USER_EMAIL = get_environ("USER_EMAIL")
+USER_PASSWORD = get_environ("USER_PASSWORD")
+TZ = get_environ("TZ")
+
+SOC_ADJUSTMENT = 5
+TIMEOUT = 10
+
+routes = [
+    Route("/soc", get_soc),
+    Route("/aggregates", get_aggregates),
+    Mount("/", StaticFiles(directory="static", html=True), name="static"),
+]
+app = Starlette(debug=True, routes=routes)
+logger.info("starting pwgateway (%s, %s)", POWERWALL, USER_EMAIL)
