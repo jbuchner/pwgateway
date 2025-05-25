@@ -208,4 +208,5 @@ routes = [
     Mount("/", StaticFiles(directory="static", html=True), name="static"),
 ]
 app = Starlette(debug=True, routes=routes)
+
 logger.info("starting pwgateway (%s, %s)", POWERWALL, USER_EMAIL)

@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
 
+COPY ./dashboard/dist/dashboard/browser /code/static
+
 CMD ["uvicorn", "app.pwgateway:app", "--host", "0.0.0.0", "--port", "80"]
 
 # docker build -t jbuchner/pwplugin:alpha .
